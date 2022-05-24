@@ -1,0 +1,93 @@
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: wordpress-region
+  labels:
+    app: wordpress-region
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wordpress-region
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpress-region
+        tier: frontend
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: NotIn
+                values:
+                - us-east-1-bos-1a
+      containers:
+      - image: wordpress:php7.1-apache
+        name: wordpress
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: wordpress-mysql
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        ports:
+        - containerPort: 80
+          name: wordpress
+        volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/html
+        resources:
+          requests: 
+            cpu: 1
+            memory: 1G
+          limits:
+            cpu: 4
+            memory: 4G
+      volumes:
+      - name: wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: wordpress-efs-pvc
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wordpress-ingress-backup
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wordpress-region
+            port:
+              number: 80
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress-region
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: wordpress-region
+  type: NodePort
+---
