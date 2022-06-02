@@ -6,3 +6,4 @@ resources:
   - mysql-deployment.yaml  
   - wordpress-deployment.yaml  
   - wordpress-backup.yaml  
+

@@ -183,3 +183,10 @@ aws dms create-replication-task \
 --table-mappings <value>
 
 
+
+
+sudo mysqladmin password “wordpress99”
+sudo mysql -sfu root -e "create database wordpress"
+sudo mysql -sfu root -e "GRANT ALL PRIVILEGES ON wordpress.* to 'wordpress'@'%' IDENTIFIED BY 'wordpress99';"
+sudo mysql -sfu root -e "FLUSH PRIVILEGES;"
+

@@ -60,7 +60,7 @@ module "eks_blueprints" {
     mg_5 = {
       node_group_name = "managed-ondemand"
       instance_types  = ["m5.large"]
-      min_size        = 2
+      min_size        = 1
       subnet_ids      = var.az_private_subnet_ids
     }
   }
@@ -81,11 +81,11 @@ module "eks_blueprints" {
       ]
       enable_monitoring = false
       # AUTOSCALING
-      max_size = "5"
+      max_size = "6"
       # EFS CSI Drvier required two nodes so that installing helm chart will not stuck 
-      min_size = "2"
+      min_size = "1"
 
-      subnet_ids = var.local_zone_private_subnet_id
+      subnet_ids = [var.local_zone_private_subnet_id]
     },
   }
 
@@ -150,6 +150,9 @@ module "eks_blueprints_kubernetes_addons" {
   enable_amazon_eks_coredns            = true
   enable_amazon_eks_kube_proxy         = true
   enable_amazon_eks_aws_ebs_csi_driver = true
+  enable_aws_load_balancer_controller = true  
+
+  enable_metrics_server               = true
 
   enable_external_dns       = true
   enable_cluster_autoscaler = true

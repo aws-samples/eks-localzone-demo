@@ -4,6 +4,6 @@ private_subnets = [
   "subnet-0e3d213bfb21127fa",
 ]
 private_subnets_local_zone = "subnet-0179a7e06585a551f"
-public_subnets_local_zone  = "subnet-0b49a2a528a2d2e68"
+# public_subnets_local_zone  = "subnet-0b49a2a528a2d2e68"
 
 ssh_key_name = "lindarr"

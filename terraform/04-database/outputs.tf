@@ -3,10 +3,16 @@ output "rds_endpoint" {
 }
 
 output "db_ec2_instance_id" {
-  value = resource.aws_instance.db-ec2-instnace.id
+  value = resource.aws_instance.db_ec2_instnace.id
 }
 
-output "db_password" {
+output "rds_password" {
   sensitive = true
-  value = resource.random_password.password.result
+  value     = resource.random_password.rds_password.result
+}
+
+
+output "ec2_mariadb_password" {
+  sensitive = true
+  value     = resource.random_password.ec2_mariadb_password.result
 }

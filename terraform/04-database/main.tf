@@ -6,7 +6,7 @@ provider "aws" {
 locals {
 }
 
-resource "aws_instance" "db-ec2-instnace" {
+resource "aws_instance" "db_ec`ssss2_instnace" {
 
   instance_type = "r5d.2xlarge"
   subnet_id     = var.private_subnets_local_zone
@@ -51,9 +51,10 @@ data "aws_ami" "amazon-linux-2" {
   owners = ["amazon"]
 }
 
-resource "random_password" "password" {
-  length           = 20
+
+resource "random_password" "ec2_mariadb_password" {
+  length  = 25
   special = false
   # override_special = "!#$%&*()-_=+[]{}<>:?"
-
 }
+

@@ -7,7 +7,7 @@ locals {
   region = "us-east-1"
 
   vpc_cidr     = "10.0.0.0/16"
-  cluster_name = "lindarr"
+  cluster_name = "aws-preprod-dev-eks"
   azs          = ["${local.region}a", "${local.region}b", "${local.region}c"]
   lzs          = ["us-east-1-bos-1a", "us-east-1-chi-1a"]
 }

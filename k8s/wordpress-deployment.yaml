@@ -32,7 +32,7 @@ spec:
   storageClassName: efs-sc
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: fs-0849b4ae4c7db34b4::fsap-0ada4b1af8970ab10
+    volumeHandle: "fs-08312777c25f61ee9::fsap-03b76858b781b84ff"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -111,7 +111,7 @@ kind: Ingress
 metadata:
   name: wordpress-ingress
   annotations:
-    alb.ingress.kubernetes.io/subnets: subnet-00e48190ccb3a1c16
+    alb.ingress.kubernetes.io/subnets: "subnet-0b49a2a528a2d2e68"
     alb.ingress.kubernetes.io/scheme: internet-facing
 spec:
   ingressClassName: alb
