@@ -7,3 +7,6 @@ private_subnets_local_zone = "subnet-0179a7e06585a551f"
 # public_subnets_local_zone  = "subnet-0b49a2a528a2d2e68"
 
 ssh_key_name = "lindarr"
+vpc_cidr_block = "10.0.0.0/16"
+
+vpc_id = "vpc-0c544fbcafdbbb035"

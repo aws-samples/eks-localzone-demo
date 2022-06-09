@@ -46,3 +46,20 @@ resource "aws_security_group" "efs_mount" {
   }
 
 }
+
+
+resource "aws_efs_access_point" "wordpress_ap2" {
+  file_system_id = aws_efs_file_system.wordpress.id
+  posix_user {
+    uid = 1000
+    gid = 1000
+  }
+  root_directory {
+    path = "/wordpress2"
+    creation_info {
+      owner_gid   = 1000
+      owner_uid   = 1000
+      permissions = "0777"
+    }
+  }
+}

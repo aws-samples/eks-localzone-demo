@@ -24,7 +24,7 @@ metadata:
   name: wordpress-efs-pv
 spec:
   capacity:
-    storage: 5Gi
+    storage: 10Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
@@ -32,7 +32,7 @@ spec:
   storageClassName: efs-sc
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: "fs-08312777c25f61ee9::fsap-03b76858b781b84ff"
+    volumeHandle: "fs-08312777c25f61ee9::fsap-0250aa2272226c8d4"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -46,7 +46,7 @@ spec:
   storageClassName: efs-sc
   resources:
     requests:
-      storage: 5Gi
+      storage: 10Gi
 ---
 apiVersion: apps/v1 
 kind: Deployment
@@ -55,7 +55,7 @@ metadata:
   labels:
     app: wordpress
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: wordpress
@@ -82,12 +82,19 @@ spec:
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
-          value: wordpress-mysql
+          # value: "wordpress-mysql"
+          # value: "test-mariadb-instance.cdyids0dslnl.us-east-1.rds.amazonaws.com"
+          value: "10.0.15.185"
+        - name: WORDPRESS_DB_USER
+          # value: "admin"
+          # value: "root"
+          value: "wordpress"
         - name: WORDPRESS_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-pass
-              key: password
+          value: "wordpress99"
+          # valueFrom:
+          #   secretKeyRef:
+          #     name: rds-pass-25858gbc58
+          #     key: password
         ports:
         - containerPort: 80
           name: wordpress
@@ -104,6 +111,7 @@ spec:
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
+          # claimName: wordpress-ebs-pvc # wordpress-efs-pvc2
           claimName: wordpress-efs-pvc
 ---
 apiVersion: networking.k8s.io/v1
@@ -113,6 +121,8 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/subnets: "subnet-0b49a2a528a2d2e68"
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:091550601287:certificate/75cad826-f2f2-45e5-8bfe-c9b722d635d7
+    external-dns.alpha.kubernetes.io/hostname: demo.primary.lindarren.com
 spec:
   ingressClassName: alb
   rules:

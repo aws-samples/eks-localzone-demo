@@ -3,7 +3,6 @@ provider "aws" {
 
 }
 
-
 provider "helm" {
   kubernetes {
     host                   = module.eks_blueprints.eks_cluster_endpoint
@@ -17,7 +16,6 @@ provider "helm" {
     }
   }
 }
-
 
 locals {
   name   = basename(path.cwd)
@@ -89,6 +87,17 @@ module "eks_blueprints" {
     },
   }
 
+  cluster_security_group_additional_rules = {
+      ingress_nodes = {
+      description                = "Allow all connections from nodes"
+      protocol                   = "-1"
+      from_port                  = 0
+      to_port                    = 0
+      type                       = "ingress"
+      source_node_security_group = true
+    }
+  }
+
   #----------------------------------------------------------------------------------------------------------#
   # Securaity groups used in this module created by the upstream modules terraform-aws-eks (https://github.com/terraform-aws-modules/terraform-aws-eks).
   #   Upstrem module implemented Security groups based on the best practices doc https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html.
@@ -131,10 +140,6 @@ module "eks_blueprints" {
 }
 
 
-
-
-
-
 module "eks_blueprints_kubernetes_addons" {
   source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons"
 
@@ -157,12 +162,12 @@ module "eks_blueprints_kubernetes_addons" {
   enable_external_dns       = true
   enable_cluster_autoscaler = true
 
-  enable_aws_efs_csi_driver = true
+  # enable_aws_efs_csi_driver = true
   # EFS CSI Drvier required two nodes so that installing helm chart will not stuck 
 
-  aws_efs_csi_driver_helm_config = {
-    version = "2.2.6"
-  }
+  # aws_efs_csi_driver_helm_config = {
+    # version = "2.2.6"
+  # }
 
   aws_load_balancer_controller_helm_config = {
     version = "1.4.1"

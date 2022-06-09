@@ -6,7 +6,7 @@ provider "aws" {
 locals {
 }
 
-resource "aws_instance" "db_ec`ssss2_instnace" {
+resource "aws_instance" "db_ec2_instnace" {
 
   instance_type = "r5d.2xlarge"
   subnet_id     = var.private_subnets_local_zone
@@ -17,6 +17,8 @@ resource "aws_instance" "db_ec`ssss2_instnace" {
     volume_type = "gp2"
     device_name = "/dev/xvda"
   }
+
+  security_groups = [ aws_security_group.rds_security_group.id ]
 
   key_name = var.ssh_key_name
 

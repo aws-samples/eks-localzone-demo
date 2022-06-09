@@ -34,8 +34,8 @@ resource "aws_dms_endpoint" "source_endpoint" {
   endpoint_type = "source"
   engine_name   = "mariadb"
   endpoint_id   = "source-mariadb-lz-ec2"
-  password      = random_password.ec2_mariadb_password.result
-  username      = "root"
+  password      = "wordpress99"
+  username      = "wordpress"
   port          = 3306
   server_name   = aws_instance.db_ec2_instnace.private_ip
 
@@ -48,18 +48,18 @@ resource "aws_dms_endpoint" "target_endpoint" {
   password      = random_password.rds_password.result
   username      = "admin"
   port          = 3306
-  server_name   = aws_db_instance.rds.endpoint
+  server_name   = split(":",aws_db_instance.rds.endpoint)[0]
 }
 
-# resource "aws_dms_replication_task" "my_replication_task" {
-#   source_endpoint_arn      = aws_dms_endpoint.source_endpoint.endpoint_arn
-#   target_endpoint_arn      = aws_dms_endpoint.target_endpoint.endpoint_arn
-#   replication_instance_arn = aws_dms_replication_instance.my-repl-instance.replication_instance_arn
-#   migration_type           = "full-load-and-cdc"
-#   table_mappings           = "" // TODO 
-#   replication_task_id      = "my-replication-task"
-# }
-
+resource "aws_dms_replication_task" "my_replication_task" {
+  source_endpoint_arn      = aws_dms_endpoint.source_endpoint.endpoint_arn
+  target_endpoint_arn      = aws_dms_endpoint.target_endpoint.endpoint_arn
+  replication_instance_arn = aws_dms_replication_instance.my-dms-instance.replication_instance_arn
+  migration_type           = "full-load-and-cdc"
+  # table_mappings           = jsonencode(jsondecode(file("${path.module}/table-mappings.json")))
+  table_mappings           = file("${path.module}/table-mappings.json")
+  replication_task_id      = "my-replication-task"
+}
 
 
 
