@@ -70,6 +70,7 @@ module "eks_blueprints" {
       instance_type      = "r5d.2xlarge"
       capacity_type      = ""                # Optional Use this only for SPOT capacity as capacity_type = "spot"
       launch_template_os = "amazonlinux2eks" # amazonlinux2eks  or bottlerocket or windows
+      # launch_template_os = "bottlerocket" # amazonlinux2eks  or bottlerocket or windows
       block_device_mappings = [
         {
           device_name = "/dev/xvda"
@@ -79,7 +80,7 @@ module "eks_blueprints" {
       ]
       enable_monitoring = false
       # AUTOSCALING
-      max_size = "6"
+      max_size = "3"
       # EFS CSI Drvier required two nodes so that installing helm chart will not stuck 
       min_size = "1"
 
@@ -182,4 +183,34 @@ module "eks_blueprints_kubernetes_addons" {
   }
 
   depends_on = [module.eks_blueprints.self_managed_node_groups]
+}
+
+
+resource "aws_security_group_rule" "allow_node_sg_to_cluster_sg" {
+  description = "Self-managed Nodegroup to Cluster API/Managed Nodegroup all traffic"
+
+  source_security_group_id = module.eks_blueprints.worker_node_security_group_id
+  security_group_id        = module.eks_blueprints.cluster_primary_security_group_id
+  type                     = "ingress"
+  protocol                 = "-1"
+  from_port                = 0
+  to_port                  = 0
+
+  depends_on = [
+    module.eks_blueprints
+  ]
+}
+
+resource "aws_security_group_rule" "allow_node_sg_from_cluster_sg" {
+  description = "Cluster API/Managed Nodegroup to Self-Managed Nodegroup all traffic"
+  source_security_group_id = module.eks_blueprints.cluster_primary_security_group_id
+  security_group_id        = module.eks_blueprints.worker_node_security_group_id
+  type                     = "ingress"
+  protocol                 = "-1"
+  from_port                = 0
+  to_port                  = 0
+
+  depends_on = [
+    module.eks_blueprints
+  ]
 }
