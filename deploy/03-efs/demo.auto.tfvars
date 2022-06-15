@@ -1,4 +1,4 @@
-subnets = [
+private_subnets = [
   "subnet-04bfbdb56eab20f3f",
   "subnet-0282d89055cab1760",
   "subnet-0e3d213bfb21127fa",

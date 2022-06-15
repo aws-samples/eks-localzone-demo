@@ -3,23 +3,23 @@ provider "aws" {
 }
 
 locals {
-  name   = "demo-vpc"
-  region = "us-east-1"
+  name   = var.name
+  region = var.region
 
-  vpc_cidr     = "10.0.0.0/16"
-  cluster_name = "aws-preprod-dev-eks"
+  vpc_cidr     = var.vpc_cidr
+  cluster_name = var.cluster_name
   azs          = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  lzs          = ["us-east-1-bos-1a", "us-east-1-chi-1a"]
+  lzs          = var.lzs
 }
 
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name            = local.name
-  cidr            = local.vpc_cidr
+  name            = var.name
+  cidr            = var.vpc_cidr
   azs             = local.azs
-  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 10)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k)]
+  private_subnets = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 10)]
 
   enable_nat_gateway = true
   single_nat_gateway = true
@@ -28,19 +28,19 @@ module "vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                      = "1"
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = "1"
   }
 }
 
 resource "aws_subnet" "public-subnet-lz" {
   vpc_id                  = module.vpc.vpc_id
-  cidr_block              = cidrsubnet(local.vpc_cidr, 8, 5)
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, 5)
   availability_zone       = local.lzs[0]
   map_public_ip_on_launch = true
   tags = merge(
@@ -50,7 +50,7 @@ resource "aws_subnet" "public-subnet-lz" {
 
 resource "aws_subnet" "private-subnet-lz" {
   vpc_id            = module.vpc.vpc_id
-  cidr_block        = cidrsubnet(local.vpc_cidr, 8, 10 + 5)
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, 10 + 5)
   availability_zone = local.lzs[0]
   tags = merge(
     { "Name" = "${module.vpc.name}-private-${local.lzs[0]}" },

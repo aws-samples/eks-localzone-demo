@@ -1,8 +1,11 @@
 
+
+
+
 resource "aws_dms_replication_subnet_group" "subnet_group" {
   subnet_ids                           = concat(var.private_subnets, [var.private_subnets_local_zone])
-  replication_subnet_group_description = "localzone-demo"
-  replication_subnet_group_id          = "localzone-demo"
+  replication_subnet_group_description = "${local.name} localzone"
+  replication_subnet_group_id          = "${local.name}-local-zone-subnetgroup"
 }
 
 # Create a new replication instance
@@ -14,7 +17,7 @@ resource "aws_dms_replication_instance" "my-dms-instance" {
   preferred_maintenance_window = "sun:10:30-sun:14:30"
   publicly_accessible          = true
   replication_instance_class   = "dms.t3.medium"
-  replication_instance_id      = "test-dms-replication-instance"
+  replication_instance_id      = "${local.name}-dms-replication-instance"
   replication_subnet_group_id  = aws_dms_replication_subnet_group.subnet_group.id
 
 
@@ -33,9 +36,9 @@ resource "aws_dms_replication_instance" "my-dms-instance" {
 resource "aws_dms_endpoint" "source_endpoint" {
   endpoint_type = "source"
   engine_name   = "mariadb"
-  endpoint_id   = "source-mariadb-lz-ec2"
-  password      = "wordpress99"
-  username      = "wordpress"
+  endpoint_id   = "${local.name}-source-mariadb-lz-ec2"
+  password      = local.ec2_db_instance_password
+  username      = local.ec2_db_instance_username
   port          = 3306
   server_name   = aws_instance.db_ec2_instnace.private_ip
 
@@ -44,11 +47,11 @@ resource "aws_dms_endpoint" "source_endpoint" {
 resource "aws_dms_endpoint" "target_endpoint" {
   engine_name   = "mariadb"
   endpoint_type = "target"
-  endpoint_id   = "target-mariadb-rds"
+  endpoint_id   = "${local.name}-target-mariadb-rds"
   password      = random_password.rds_password.result
   username      = "admin"
   port          = 3306
-  server_name   = split(":",aws_db_instance.rds.endpoint)[0]
+  server_name   = split(":", aws_db_instance.rds.endpoint)[0]
 }
 
 resource "aws_dms_replication_task" "my_replication_task" {
@@ -56,9 +59,11 @@ resource "aws_dms_replication_task" "my_replication_task" {
   target_endpoint_arn      = aws_dms_endpoint.target_endpoint.endpoint_arn
   replication_instance_arn = aws_dms_replication_instance.my-dms-instance.replication_instance_arn
   migration_type           = "full-load-and-cdc"
-  # table_mappings           = jsonencode(jsondecode(file("${path.module}/table-mappings.json")))
   table_mappings           = file("${path.module}/table-mappings.json")
-  replication_task_id      = "my-replication-task"
+  replication_task_id      = "${local.name}-replication-task"
+
+  
+  
 }
 
 
@@ -83,7 +88,37 @@ data "aws_iam_policy_document" "dms_assume_role" {
 
 resource "aws_iam_role" "dms-access-for-endpoint" {
   assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-  name               = "dms-access-for-endpoint"
+  name        = "dms-access-for-endpoint"
+  # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
+
+  provisioner "local-exec" {
+    command = "sleep 10"
+  }
+}
+
+
+resource "aws_iam_role" "dms-cloudwatch-logs-role" {
+  assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
+  name        = "dms-cloudwatch-logs-role"
+  # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
+  provisioner "local-exec" {
+    command = "sleep 10"
+  }
+}
+
+resource "aws_iam_role" "dms-vpc-role" {
+  assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
+  name        = "dms-vpc-role"
+  # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
+  provisioner "local-exec" {
+    command = "sleep 10"
+  }
+
+}
+
+resource "aws_iam_role_policy_attachment" "dms-vpc-role-AmazonDMSVPCManagementRole" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole"
+  role       = aws_iam_role.dms-vpc-role.name
 }
 
 resource "aws_iam_role_policy_attachment" "dms-access-for-endpoint-AmazonDMSRedshiftS3Role" {
@@ -91,22 +126,7 @@ resource "aws_iam_role_policy_attachment" "dms-access-for-endpoint-AmazonDMSReds
   role       = aws_iam_role.dms-access-for-endpoint.name
 }
 
-resource "aws_iam_role" "dms-cloudwatch-logs-role" {
-  assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-  name               = "dms-cloudwatch-logs-role"
-}
-
 resource "aws_iam_role_policy_attachment" "dms-cloudwatch-logs-role-AmazonDMSCloudWatchLogsRole" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSCloudWatchLogsRole"
   role       = aws_iam_role.dms-cloudwatch-logs-role.name
-}
-
-resource "aws_iam_role" "dms-vpc-role" {
-  assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-  name               = "dms-vpc-role"
-}
-
-resource "aws_iam_role_policy_attachment" "dms-vpc-role-AmazonDMSVPCManagementRole" {
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole"
-  role       = aws_iam_role.dms-vpc-role.name
 }

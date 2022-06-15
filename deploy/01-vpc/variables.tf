@@ -9,3 +9,11 @@ variable "vpc_cidr" {
 variable "cluster_name" {
   type = string
 }
+
+variable "region" {
+  type = string
+}
+
+variable "lzs" {
+  type = list(string)
+}

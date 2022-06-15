@@ -1,12 +1,13 @@
 variable "vpc_id" {
   type = string
+  description = "The IP of the VPC"
 }
 
-variable "az_private_subnet_ids" {
+variable "private_subnets" {
   type = list(string)
 }
 
-variable "local_zone_private_subnet_id" {
+variable "private_subnets_local_zone" {
   type = string
 }
 

@@ -4,40 +4,61 @@ provider "aws" {
 }
 
 locals {
+  name = "demo"
+  ec2_db_instance_username = "wordpress"
+  ec2_db_instance_password = "wordpress99"
 }
 
 resource "aws_instance" "db_ec2_instnace" {
 
-  instance_type = "r5d.2xlarge"
+  instance_type = "t3.xlarge"
   subnet_id     = var.private_subnets_local_zone
   ami           = data.aws_ami.amazon-linux-2.id
 
   ebs_block_device {
-    volume_size = 30
+    volume_size = 40
     volume_type = "gp2"
     device_name = "/dev/xvda"
   }
 
-  security_groups = [ aws_security_group.rds_security_group.id ]
+  vpc_security_group_ids = [ aws_security_group.rds_security_group.id ]
 
   key_name = var.ssh_key_name
 
   user_data = <<EOF
     #!/bin/sh
-    yum -y update
     curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
     bash mariadb_repo_setup --os-type=rhel  --os-version=7 --mariadb-server-version=10.7
 
     yum makecache
     yum repolist
-
     yum install -y MariaDB-server MariaDB-client
+
     systemctl enable --now mariadb
+
+    mysql -sfu root -e "GRANT ALL PRIVILEGES ON wordpress.* to 'wordpress'@'%' IDENTIFIED BY 'wordpress99';"
+    mysql -sfu root -e "GRANT SUPER, RELOAD, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO wordpress@'%';"
+    mysql -sfu root -e "FLUSH PRIVILEGES;"
+
+    systemctl stop mariadb
+
+    sudo cp /etc/my.cnf.d/server.cnf /etc/my.cnf.d/server.cnf.backup
+    sudo rm /etc/my.cnf.d/server.cnf 
+
+    sudo tee /etc/my.cnf.d/server.cnf<<EOT
+    [mysqld]
+    log_bin=/var/lib/mysql/bin-log
+    log_bin_index=/var/lib/mysql/mysql-bin.index
+    expire_logs_days=2
+    binlog_format=ROW
+    EOT
+
+    systemctl start mariadb
 
   EOF
 
   tags = {
-    "Name" = "Database Instance"
+    "Name" = "Maria Database Instance"
   }
 
   iam_instance_profile = "SSMManagedInstanceProfileRole"

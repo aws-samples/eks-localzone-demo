@@ -1,6 +1,5 @@
 provider "aws" {
-  region = "us-east-1"
-
+  region = "us-east-1" 
 }
 
 resource "aws_efs_file_system" "wordpress" {
@@ -28,10 +27,10 @@ resource "aws_efs_access_point" "wordpress_ap" {
 }
 
 resource "aws_efs_mount_target" "default" {
-  count          = length(var.subnets) > 0 ? length(var.subnets) : 0
+  count          = length(var.private_subnets) > 0 ? length(var.private_subnets) : 0
   file_system_id = aws_efs_file_system.wordpress.id
   #   ip_address     = var.mount_target_ip_address
-  subnet_id       = var.subnets[count.index]
+  subnet_id       = var.private_subnets[count.index]
   security_groups = [aws_security_group.efs_mount.id]
 }
 

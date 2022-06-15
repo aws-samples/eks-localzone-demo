@@ -19,7 +19,7 @@ provider "helm" {
 
 locals {
   name   = basename(path.cwd)
-  region = "us-west-2"
+  region = "us-east-2"
 
 }
 
@@ -48,7 +48,7 @@ module "eks_blueprints" {
 
   # EKS Cluster VPC and Subnet mandatory config
   vpc_id             = var.vpc_id
-  private_subnet_ids = var.az_private_subnet_ids
+  private_subnet_ids = var.private_subnets
 
   # EKS CONTROL PLANE VARIABLES
   cluster_version = "1.22"
@@ -59,7 +59,7 @@ module "eks_blueprints" {
       node_group_name = "managed-ondemand"
       instance_types  = ["m5.large"]
       min_size        = 1
-      subnet_ids      = var.az_private_subnet_ids
+      subnet_ids      = var.private_subnets_local_zone
     }
   }
 
@@ -67,7 +67,7 @@ module "eks_blueprints" {
   self_managed_node_groups = {
     self_mg_4 = {
       node_group_name    = "self-managed-ondemand"
-      instance_type      = "r5d.2xlarge"
+      instance_type      = "t3.xlarge"
       capacity_type      = ""                # Optional Use this only for SPOT capacity as capacity_type = "spot"
       launch_template_os = "amazonlinux2eks" # amazonlinux2eks  or bottlerocket or windows
       # launch_template_os = "bottlerocket" # amazonlinux2eks  or bottlerocket or windows
@@ -84,7 +84,7 @@ module "eks_blueprints" {
       # EFS CSI Drvier required two nodes so that installing helm chart will not stuck 
       min_size = "1"
 
-      subnet_ids = [var.local_zone_private_subnet_id]
+      subnet_ids = [var.private_subnets_local_zone]
     },
   }
 
@@ -152,6 +152,7 @@ module "eks_blueprints_kubernetes_addons" {
 
 
   # EKS Addons
+  # TODO: Took ~15 min to deploy addons, need to debug further 
   enable_amazon_eks_vpc_cni            = true
   enable_amazon_eks_coredns            = true
   enable_amazon_eks_kube_proxy         = true
@@ -162,6 +163,8 @@ module "eks_blueprints_kubernetes_addons" {
 
   enable_external_dns       = true
   enable_cluster_autoscaler = true
+
+  //
 
   # enable_aws_efs_csi_driver = true
   # EFS CSI Drvier required two nodes so that installing helm chart will not stuck 
@@ -179,7 +182,7 @@ module "eks_blueprints_kubernetes_addons" {
   }
 
   amazon_eks_aws_ebs_csi_driver_config = {
-    addon_version = "v1.5.3-eksbuild.1"
+    addon_version = "v1.6.1-eksbuild.1"
   }
 
   depends_on = [module.eks_blueprints.self_managed_node_groups]

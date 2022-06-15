@@ -14,8 +14,12 @@ output "rds_password" {
   value     = resource.random_password.rds_password.result
 }
 
-
 output "ec2_mariadb_password" {
   sensitive = true
   value     = resource.random_password.ec2_mariadb_password.result
+}
+
+output "dms_repication_task_arn" {
+  value = resource.aws_dms_replication_task.my_replication_task.replication_task_arn
+
 }
