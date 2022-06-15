@@ -82,19 +82,14 @@ spec:
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
-          # value: "wordpress-mysql"
-          # value: "test-mariadb-instance.cdyids0dslnl.us-east-1.rds.amazonaws.com"
-          value: "10.0.15.185"
+          value: "10.0.15.200"
         - name: WORDPRESS_DB_USER
-          # value: "admin"
-          # value: "root"
           value: "wordpress"
         - name: WORDPRESS_DB_PASSWORD
-          value: "wordpress99"
-          # valueFrom:
-          #   secretKeyRef:
-          #     name: rds-pass-25858gbc58
-          #     key: password
+          valueFrom:
+            secretKeyRef:
+              name: db-instance-pass
+              key: password
         ports:
         - containerPort: 80
           name: wordpress
@@ -103,15 +98,14 @@ spec:
           mountPath: /var/www/html
         resources:
           requests: 
-            cpu: 1
-            memory: 1G
+            cpu: "1"
+            memory: 1Gi
           limits:
-            cpu: 4
-            memory: 4G
+            cpu: "2"
+            memory: 2Gi
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
-          # claimName: wordpress-ebs-pvc # wordpress-efs-pvc2
           claimName: wordpress-efs-pvc
 ---
 apiVersion: networking.k8s.io/v1
@@ -135,5 +129,3 @@ spec:
             name: wordpress
             port:
               number: 80
-
-

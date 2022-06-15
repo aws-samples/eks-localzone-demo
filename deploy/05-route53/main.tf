@@ -15,8 +15,8 @@ resource "aws_route53_health_check" "localzone" {
   resource_path     = "/"
   type              = "HTTPS"
   port              = 443
-  failure_threshold = 5
-  request_interval  = 30
+  failure_threshold = 3
+  request_interval  = 10
   tags = {
     Name = "Health Check for Ingress in Local Zone"
   }
@@ -27,8 +27,8 @@ resource "aws_route53_health_check" "region" {
   resource_path     = "/"
   type              = "HTTPS"
   port              = 443
-  failure_threshold = 5
-  request_interval  = 30
+  failure_threshold = 3
+  request_interval  = 10
   tags = {
     Name = "Health Check for Ingress in Region"
   }
