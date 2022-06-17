@@ -5,7 +5,7 @@ private_subnets = [
 ]
 private_subnets_local_zone = "subnet-0179a7e06585a551f"
 
-ssh_key_name = "lindarr"
+ssh_key_name   = "lindarr"
 vpc_cidr_block = "10.0.0.0/16"
 
 vpc_id = "vpc-0c544fbcafdbbb035"

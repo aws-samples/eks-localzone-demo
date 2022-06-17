@@ -8,7 +8,7 @@ resource "aws_db_instance" "rds" {
   allocated_storage      = 30
   db_subnet_group_name   = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_security_group.id]
-  skip_final_snapshot = true
+  skip_final_snapshot    = true
 }
 
 
@@ -32,10 +32,10 @@ resource "aws_security_group" "rds_security_group" {
     to_port     = 3306
   }
   egress {
-    cidr_blocks = [ "0.0.0.0/0" ]
-    from_port = 0
-    to_port = 0
-    protocol = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
     description = "Allow Outbound connection"
   }
 }

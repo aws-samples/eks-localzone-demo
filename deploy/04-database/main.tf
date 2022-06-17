@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 locals {
-  name = "demo"
+  name                     = "demo"
   ec2_db_instance_username = "wordpress"
   ec2_db_instance_password = "wordpress99"
 }
@@ -21,7 +21,7 @@ resource "aws_instance" "db_ec2_instnace" {
     device_name = "/dev/xvda"
   }
 
-  vpc_security_group_ids = [ aws_security_group.rds_security_group.id ]
+  vpc_security_group_ids = [aws_security_group.rds_security_group.id]
 
   key_name = var.ssh_key_name
 
@@ -35,24 +35,6 @@ resource "aws_instance" "db_ec2_instnace" {
     yum install -y MariaDB-server MariaDB-client
 
     systemctl enable --now mariadb
-
-    mysql -sfu root -e "GRANT ALL PRIVILEGES ON wordpress.* to 'wordpress'@'%' IDENTIFIED BY 'wordpress99';"
-    mysql -sfu root -e "GRANT SUPER, RELOAD, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO wordpress@'%';"
-    mysql -sfu root -e "FLUSH PRIVILEGES;"
-
-    systemctl stop mariadb
-
-    sudo cp /etc/my.cnf.d/server.cnf /etc/my.cnf.d/server.cnf.backup
-    sudo rm /etc/my.cnf.d/server.cnf 
-
-    sudo tee /etc/my.cnf.d/server.cnf<<EOT
-    [mysqld]
-    log_bin=/var/lib/mysql/bin-log
-    log_bin_index=/var/lib/mysql/mysql-bin.index
-    expire_logs_days=2
-    binlog_format=ROW
-    EOT
-
     systemctl start mariadb
 
   EOF
@@ -61,7 +43,7 @@ resource "aws_instance" "db_ec2_instnace" {
     "Name" = "Maria Database Instance"
   }
 
-  iam_instance_profile = "SSMManagedInstanceProfileRole"
+  iam_instance_profile = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
 data "aws_ami" "amazon-linux-2" {
@@ -81,3 +63,30 @@ resource "random_password" "ec2_mariadb_password" {
   # override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
+
+resource "aws_iam_instance_profile" "ssm_instance_profile" {
+  name_prefix = "SSM-Instance-Profile"
+  role        = aws_iam_role.role.name
+}
+
+
+resource "aws_iam_role" "role" {
+  name = "test_role"
+  path = "/"
+
+  assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  ]
+}
+
+data "aws_iam_policy_document" "instance-assume-role-policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}

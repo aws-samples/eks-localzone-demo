@@ -62,8 +62,8 @@ resource "aws_dms_replication_task" "my_replication_task" {
   table_mappings           = file("${path.module}/table-mappings.json")
   replication_task_id      = "${local.name}-replication-task"
 
-  
-  
+
+
 }
 
 
@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "dms_assume_role" {
 
 resource "aws_iam_role" "dms-access-for-endpoint" {
   assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-  name        = "dms-access-for-endpoint"
+  name               = "dms-access-for-endpoint"
   # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
 
   provisioner "local-exec" {
@@ -99,7 +99,7 @@ resource "aws_iam_role" "dms-access-for-endpoint" {
 
 resource "aws_iam_role" "dms-cloudwatch-logs-role" {
   assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-  name        = "dms-cloudwatch-logs-role"
+  name               = "dms-cloudwatch-logs-role"
   # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
   provisioner "local-exec" {
     command = "sleep 10"
@@ -108,7 +108,7 @@ resource "aws_iam_role" "dms-cloudwatch-logs-role" {
 
 resource "aws_iam_role" "dms-vpc-role" {
   assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-  name        = "dms-vpc-role"
+  name               = "dms-vpc-role"
   # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
   provisioner "local-exec" {
     command = "sleep 10"
