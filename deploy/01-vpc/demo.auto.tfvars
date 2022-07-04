@@ -4,4 +4,4 @@ cluster_name = "lindarr"
 
 region = "us-east-1"
 
-lzs          = ["us-east-1-bos-1a"]
+lzs = ["us-east-1-bos-1a"]

@@ -15,7 +15,7 @@ resource "aws_dms_replication_instance" "my-dms-instance" {
   auto_minor_version_upgrade   = true
   multi_az                     = false
   preferred_maintenance_window = "sun:10:30-sun:14:30"
-  publicly_accessible          = true
+  publicly_accessible          = false
   replication_instance_class   = "dms.t3.medium"
   replication_instance_id      = "${local.name}-dms-replication-instance"
   replication_subnet_group_id  = aws_dms_replication_subnet_group.subnet_group.id
