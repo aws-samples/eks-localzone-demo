@@ -10,6 +10,9 @@ locals {
 }
 
 resource "aws_instance" "db_ec2_instnace" {
+  #checkov:skip=CKV_AWS_79: Skip requiring IMDSv2 for demo code 
+  #checkov:skip=CKV_AWS_126: Skip detailed monitoring for demo instance
+  #checkov:skip=CKV_AWS_135: EBS Optimized is always on for Nitro EC2 instance types  
 
   instance_type = "t3.xlarge"
   subnet_id     = var.private_subnets_local_zone
@@ -19,6 +22,7 @@ resource "aws_instance" "db_ec2_instnace" {
     volume_size = 40
     volume_type = "gp2"
     device_name = "/dev/xvda"
+    encrypted = true
   }
 
   vpc_security_group_ids = [aws_security_group.rds_security_group.id]

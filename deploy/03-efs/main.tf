@@ -3,6 +3,8 @@ provider "aws" {
 }
 
 resource "aws_efs_file_system" "wordpress" {
+  encrypted = true
+     #checkov:skip=CKV_AWS_194: For demo code, we don't use customer managed keys to encrypt EFS data
 }
 
 locals {
@@ -36,6 +38,7 @@ resource "aws_efs_mount_target" "default" {
 
 resource "aws_security_group" "efs_mount" {
   vpc_id = var.vpc_id
+  description = "Security Group for EFS Mount Targets"
   ingress {
     cidr_blocks = [var.vpc_cidr_block]
     description = "Allow NFS incoming connection"

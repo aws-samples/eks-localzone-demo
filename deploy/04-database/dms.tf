@@ -19,8 +19,7 @@ resource "aws_dms_replication_instance" "my-dms-instance" {
   replication_instance_class   = "dms.t3.medium"
   replication_instance_id      = "${local.name}-dms-replication-instance"
   replication_subnet_group_id  = aws_dms_replication_subnet_group.subnet_group.id
-
-
+     #checkov:skip=CKV_AWS_212: For demo code, we use the default key
   tags = {
     Name = "my-dms-instance"
   }

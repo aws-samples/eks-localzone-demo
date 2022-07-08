@@ -1,4 +1,7 @@
 resource "aws_db_instance" "rds" {
+  #checkov:skip=CKV_AWS_157: Use single AZ for demo code
+  #checkov:skip=CKV_AWS_129: Skip logging for demo code
+  #checkov:skip=CKV_AWS_118: Skip EM for demo code 
 
   identifier             = "${local.name}-test-mariadb-instance"
   instance_class         = "db.m5.large"
@@ -9,6 +12,8 @@ resource "aws_db_instance" "rds" {
   db_subnet_group_name   = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_security_group.id]
   skip_final_snapshot    = true
+  auto_minor_version_upgrade = true
+  storage_encrypted = true
 }
 
 
@@ -24,6 +29,7 @@ resource "random_password" "rds_password" {
 
 resource "aws_security_group" "rds_security_group" {
   vpc_id = var.vpc_id
+  description = "Security Groups for RDS"
   ingress {
     cidr_blocks = [var.vpc_cidr_block]
     description = "Allow RDS incoming connection"
