@@ -14,3 +14,7 @@ variable "private_subnets_local_zone" {
 variable "cluster_name" {
   type = string
 }
+
+variable "domain_name" {
+  type = string
+}

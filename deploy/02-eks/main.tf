@@ -19,8 +19,8 @@ provider "helm" {
 
 locals {
   name   = basename(path.cwd)
-  region = "us-east-2"
-
+  region = "us-east-1"
+  domain = var.domain_name
 }
 
 
@@ -59,7 +59,7 @@ module "eks_blueprints" {
       node_group_name = "managed-ondemand"
       instance_types  = ["m5.large"]
       min_size        = 1
-      subnet_ids      = [var.private_subnets_local_zone]
+      subnet_ids      = var.private_subnets
     }
   }
 
@@ -148,7 +148,7 @@ module "eks_blueprints_kubernetes_addons" {
   eks_worker_security_group_id = module.eks_blueprints.worker_node_security_group_id
   auto_scaling_group_names     = module.eks_blueprints.self_managed_node_group_autoscaling_groups
 
-  eks_cluster_domain = "lindarren.com"
+  eks_cluster_domain = locals.domain
 
 
   # EKS Addons
