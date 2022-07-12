@@ -148,7 +148,7 @@ module "eks_blueprints_kubernetes_addons" {
   eks_worker_security_group_id = module.eks_blueprints.worker_node_security_group_id
   auto_scaling_group_names     = module.eks_blueprints.self_managed_node_group_autoscaling_groups
 
-  eks_cluster_domain = locals.domain
+  eks_cluster_domain = local.domain
 
 
   # EKS Addons
