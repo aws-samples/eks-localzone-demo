@@ -59,7 +59,7 @@ module "eks_blueprints" {
       node_group_name = "managed-ondemand"
       instance_types  = ["m5.large"]
       min_size        = 1
-      subnet_ids      = var.private_subnets_local_zone
+      subnet_ids      = [var.private_subnets_local_zone]
     }
   }
 
