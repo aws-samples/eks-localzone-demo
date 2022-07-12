@@ -75,7 +75,7 @@ resource "aws_iam_instance_profile" "ssm_instance_profile" {
 
 
 resource "aws_iam_role" "role" {
-  name = "test_role"
+  # name = "ec2_instance_ssm_role"
   path = "/"
 
   assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
