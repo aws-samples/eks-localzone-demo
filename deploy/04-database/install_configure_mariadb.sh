@@ -17,3 +17,4 @@ binlog_format= ROW
 EOT
 
 sudo systemctl start mariadb
+
