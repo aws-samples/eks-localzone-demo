@@ -18,3 +18,10 @@ variable "vpc_cidr_block" {
 variable "vpc_id" {
   type = string
 }
+
+# IAM roles
+variable "create_iam_roles" {
+  description = "Determines whether the required [DMS IAM resources](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Security.html#CHAP_Security.APIRole) will be created"
+  type        = bool
+  default     = true
+}

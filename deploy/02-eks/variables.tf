@@ -15,6 +15,6 @@ variable "cluster_name" {
   type = string
 }
 
-variable "domain_name" {
+variable "domain_name_in_route53" {
   type = string
 }

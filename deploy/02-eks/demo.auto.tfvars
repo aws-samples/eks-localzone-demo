@@ -7,4 +7,4 @@ private_subnets = [
 private_subnets_local_zone = "subnet-0f19d51410f6167ac"
 cluster_name = "lindarr-demo"
 
-domain_name = "lindarren.com"
+domain_name_in_route53 = "lindarren.com"

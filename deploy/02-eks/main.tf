@@ -20,7 +20,7 @@ provider "helm" {
 locals {
   name   = basename(path.cwd)
   region = "us-east-1"
-  domain = var.domain_name
+  domain_for_route53 = var.domain_name_in_route53
 }
 
 
@@ -138,6 +138,7 @@ module "eks_blueprints" {
     }
   }
 
+
 }
 
 
@@ -148,42 +149,42 @@ module "eks_blueprints_kubernetes_addons" {
   eks_worker_security_group_id = module.eks_blueprints.worker_node_security_group_id
   auto_scaling_group_names     = module.eks_blueprints.self_managed_node_group_autoscaling_groups
 
-  eks_cluster_domain = local.domain
+  eks_cluster_domain = local.domain_for_route53
 
 
   # EKS Addons
   # TODO: Took ~15 min to deploy addons, need to debug further 
-  enable_amazon_eks_vpc_cni            = true
-  enable_amazon_eks_coredns            = true
-  enable_amazon_eks_kube_proxy         = true
+  # enable_amazon_eks_vpc_cni            = true
+  # enable_amazon_eks_coredns            = true
+  # enable_amazon_eks_kube_proxy         = true
   enable_amazon_eks_aws_ebs_csi_driver = true
   enable_aws_load_balancer_controller = true  
 
   enable_metrics_server               = true
 
   enable_external_dns       = true
-  enable_cluster_autoscaler = true
+  # enable_cluster_autoscaler = true
 
   //
 
-  # enable_aws_efs_csi_driver = true
+  enable_aws_efs_csi_driver = true
   # EFS CSI Drvier required two nodes so that installing helm chart will not stuck 
 
   # aws_efs_csi_driver_helm_config = {
     # version = "2.2.6"
   # }
 
-  aws_load_balancer_controller_helm_config = {
-    version = "1.4.1"
-  }
+  # aws_load_balancer_controller_helm_config = {
+  #   version = "1.4.1"
+  # }
 
-  amazon_eks_kube_proxy_config = {
-    addon_version = "v1.22.6-eksbuild.1"
-  }
+  # amazon_eks_kube_proxy_config = {
+  #   addon_version = "v1.22.6-eksbuild.1"
+  # }
 
-  amazon_eks_aws_ebs_csi_driver_config = {
-    addon_version = "v1.6.1-eksbuild.1"
-  }
+  # amazon_eks_aws_ebs_csi_driver_config = {
+  #   addon_version = "v1.6.1-eksbuild.1"
+  # }
 
   depends_on = [module.eks_blueprints.self_managed_node_groups]
 }
@@ -216,4 +217,17 @@ resource "aws_security_group_rule" "allow_node_sg_from_cluster_sg" {
   depends_on = [
     module.eks_blueprints
   ]
+}
+
+
+resource "null_resource" "kubeconfig" {
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --region ${local.region} --name ${module.eks_blueprints.eks_cluster_id}"
+  }
+
+  depends_on = [
+    module.eks_blueprints
+  ]
+
+
 }

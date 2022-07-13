@@ -60,9 +60,6 @@ resource "aws_dms_replication_task" "my_replication_task" {
   migration_type           = "full-load-and-cdc"
   table_mappings           = file("${path.module}/table-mappings.json")
   replication_task_id      = "${local.name}-replication-task"
-
-
-
 }
 
 
@@ -75,6 +72,8 @@ resource "aws_dms_replication_task" "my_replication_task" {
 #  * dms-access-for-endpoint
 
 data "aws_iam_policy_document" "dms_assume_role" {
+  count = var.create_iam_roles ? 1 : 0
+
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -86,7 +85,9 @@ data "aws_iam_policy_document" "dms_assume_role" {
 }
 
 resource "aws_iam_role" "dms-access-for-endpoint" {
-  assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
+  count = var.create_iam_roles ? 1 : 0
+
+  assume_role_policy = data.aws_iam_policy_document.dms_assume_role[0].json
   name               = "dms-access-for-endpoint"
   # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
 
@@ -97,7 +98,9 @@ resource "aws_iam_role" "dms-access-for-endpoint" {
 
 
 resource "aws_iam_role" "dms-cloudwatch-logs-role" {
-  assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
+  count = var.create_iam_roles ? 1 : 0
+
+  assume_role_policy = data.aws_iam_policy_document.dms_assume_role[0].json
   name               = "dms-cloudwatch-logs-role"
   # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
   provisioner "local-exec" {
@@ -106,7 +109,9 @@ resource "aws_iam_role" "dms-cloudwatch-logs-role" {
 }
 
 resource "aws_iam_role" "dms-vpc-role" {
-  assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
+  count = var.create_iam_roles ? 1 : 0
+
+  assume_role_policy = data.aws_iam_policy_document.dms_assume_role[0].json
   name               = "dms-vpc-role"
   # https://github.com/hashicorp/terraform-provider-aws/issues/11025#issuecomment-660059684
   provisioner "local-exec" {
@@ -116,16 +121,19 @@ resource "aws_iam_role" "dms-vpc-role" {
 }
 
 resource "aws_iam_role_policy_attachment" "dms-vpc-role-AmazonDMSVPCManagementRole" {
+  count = var.create_iam_roles ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole"
-  role       = aws_iam_role.dms-vpc-role.name
+  role       = aws_iam_role.dms-vpc-role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "dms-access-for-endpoint-AmazonDMSRedshiftS3Role" {
+  count = var.create_iam_roles ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSRedshiftS3Role"
-  role       = aws_iam_role.dms-access-for-endpoint.name
+  role       = aws_iam_role.dms-access-for-endpoint[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "dms-cloudwatch-logs-role-AmazonDMSCloudWatchLogsRole" {
+  count = var.create_iam_roles ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSCloudWatchLogsRole"
-  role       = aws_iam_role.dms-cloudwatch-logs-role.name
+  role       = aws_iam_role.dms-cloudwatch-logs-role[0].name
 }

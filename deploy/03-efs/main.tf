@@ -26,6 +26,10 @@ resource "aws_efs_access_point" "wordpress_ap" {
       permissions = "0777"
     }
   }
+
+  depends_on = [
+    aws_efs_file_system.wordpress
+  ]
 }
 
 resource "aws_efs_mount_target" "default" {
@@ -34,6 +38,12 @@ resource "aws_efs_mount_target" "default" {
   #   ip_address     = var.mount_target_ip_address
   subnet_id       = var.private_subnets[count.index]
   security_groups = [aws_security_group.efs_mount.id]
+
+
+  depends_on = [
+    aws_efs_file_system.wordpress,
+    aws_security_group.efs_mount
+  ]
 }
 
 resource "aws_security_group" "efs_mount" {
@@ -46,6 +56,5 @@ resource "aws_security_group" "efs_mount" {
     protocol    = "tcp"
     to_port     = 2049
   }
-
 }
 
