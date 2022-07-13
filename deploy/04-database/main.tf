@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 locals {
-  name                     = "demo"
+  name                     = "demo-localzone"
   ec2_db_instance_username = "wordpress"
   ec2_db_instance_password = "wordpress99"
 }
@@ -34,6 +34,7 @@ resource "aws_instance" "db_ec2_instnace" {
     curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
     bash mariadb_repo_setup --os-type=rhel  --os-version=7 --mariadb-server-version=10.7
 
+    yum update -y
     yum makecache
     yum repolist
     yum install -y MariaDB-server MariaDB-client
