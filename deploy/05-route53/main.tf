@@ -4,10 +4,10 @@ provider "aws" {
 }
 
 locals {
-  endpoint_local_zone = "demo.primary.lindarren.com"
-  endpoint_region     = "demo.backup.lindarren.com"
-  domain_name    = "lindarren.com."
-  app_name       = "demo"
+  endpoint_local_zone = var.endpoint_local_zone
+  endpoint_region     = var.endpoint_region
+  domain_name    = var.domain_name
+  app_name       = var.app_name
 }
 
 resource "aws_route53_health_check" "localzone" {
