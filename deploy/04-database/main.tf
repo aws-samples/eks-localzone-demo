@@ -35,7 +35,7 @@ resource "aws_instance" "db_ec2_instnace" {
     bash mariadb_repo_setup --os-type=rhel  --os-version=7 --mariadb-server-version=10.7
     yum install -y MariaDB-server MariaDB-client
 
-    yum update -y
+    yum update -y --security
     yum makecache
     yum repolist
 
