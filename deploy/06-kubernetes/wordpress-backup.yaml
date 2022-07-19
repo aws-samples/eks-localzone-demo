@@ -32,24 +32,14 @@ spec:
       - image: wordpress:php7.1-apache
         name: wordpress
         env:
-        # - name: WORDPRESS_DB_HOST
-        #   value: "10.0.15.43"
-        # - name: WORDPRESS_DB_USER
-        #   value: "wordpress"
-        # - name: WORDPRESS_DB_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: db-instance-pass
-        #       key: password
-
-        - name: WORDPRESS_DB_USER
-          value: "admin"
         - name: WORDPRESS_DB_HOST
-          value: "demo-localzone-test-mariadb-instance20220716013905767800000005.cdyids0dslnl.us-east-1.rds.amazonaws.com"
+          value: "10.0.15.43"
+        - name: WORDPRESS_DB_USER
+          value: "wordpress"
         - name: WORDPRESS_DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: rds-pass
+              name: db-instance-pass
               key: password
         ports:
         - containerPort: 80

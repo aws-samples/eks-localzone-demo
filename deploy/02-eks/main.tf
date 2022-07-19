@@ -186,7 +186,10 @@ module "eks_blueprints_kubernetes_addons" {
   #   addon_version = "v1.6.1-eksbuild.1"
   # }
 
-  depends_on = [module.eks_blueprints.self_managed_node_groups]
+  depends_on = [
+    module.eks_blueprints.self_managed_node_groups,
+    module.eks_blueprints.managed_node_groups
+  ]
 }
 
 

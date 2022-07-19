@@ -81,8 +81,6 @@ spec:
       - image: wordpress:php7.1-apache
         name: wordpress
         env:
-
-
         - name: WORDPRESS_DB_HOST
           value: "10.0.15.43"
         - name: WORDPRESS_DB_USER
