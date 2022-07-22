@@ -14,6 +14,8 @@ metadata:
   name: wordpress-mysql
   labels:
     app: wordpress
+  annotations:
+    checkov.io/skip1: CKV_K8S_21 Using default namespace is acceptable for demo code
 spec:
   ports:
     - port: 3306
@@ -39,6 +41,12 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  annotations: 
+    checkov.io/skip1: CKV_K8S_37 Using the default settings of containers with capabilities for brevity
+    checkov.io/skip2: CKV_K8S_37 Skip specifying the seccomp profile for simplicity
+    checkov.io/skip3: CKV_K8S_8 Skipping liveness probe as it is not directly related to security
+    checkov.io/skip4: CKV_K8S_15 skipping image pull policy as it is not directly related to security 
+
   name: wordpress-mysql
   labels:
     app: wordpress

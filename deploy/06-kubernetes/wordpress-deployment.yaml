@@ -32,7 +32,7 @@ spec:
   storageClassName: efs-sc
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: "fs-004c8019b4cd117b1::fsap-09e326cb72858f300"
+    volumeHandle: "fs-024f950b4c448cc67::fsap-046d60b356c84b394"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -82,7 +82,7 @@ spec:
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
-          value: "10.0.15.43"
+          value: "10.0.15.79"
         - name: WORDPRESS_DB_USER
           value: "wordpress"
         - name: WORDPRESS_DB_PASSWORD
@@ -113,7 +113,7 @@ kind: Ingress
 metadata:
   name: wordpress-ingress
   annotations:
-    alb.ingress.kubernetes.io/subnets: "subnet-02e515fe240c0e6d4"
+    alb.ingress.kubernetes.io/subnets: "subnet-08e40f5eef7d4e3d4"
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:091550601287:certificate/75cad826-f2f2-45e5-8bfe-c9b722d635d7
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'

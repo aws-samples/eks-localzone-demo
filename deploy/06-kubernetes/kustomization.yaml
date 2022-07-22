@@ -1,7 +1,7 @@
 secretGenerator:
 - name: rds-pass
   literals:
-  - password=kJPA5ssH8QWSTJqppoQGTUl4Z
+  - password=vYXtXtoBJZ1he5zgKSDVWE7nr
 - name: db-instance-pass
   literals:
   - password=wordpress99

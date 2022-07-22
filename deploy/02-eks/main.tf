@@ -165,27 +165,9 @@ module "eks_blueprints_kubernetes_addons" {
   enable_external_dns       = true
   # enable_cluster_autoscaler = true
 
-  //
 
   enable_aws_efs_csi_driver = true
   # EFS CSI Drvier required two nodes so that installing helm chart will not stuck 
-
-  # aws_efs_csi_driver_helm_config = {
-    # version = "2.2.6"
-  # }
-
-  # aws_load_balancer_controller_helm_config = {
-  #   version = "1.4.1"
-  # }
-
-  # amazon_eks_kube_proxy_config = {
-  #   addon_version = "v1.22.6-eksbuild.1"
-  # }
-
-  # amazon_eks_aws_ebs_csi_driver_config = {
-  #   addon_version = "v1.6.1-eksbuild.1"
-  # }
-
   depends_on = [
     module.eks_blueprints.self_managed_node_groups,
     module.eks_blueprints.managed_node_groups
