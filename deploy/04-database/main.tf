@@ -10,6 +10,7 @@ locals {
 }
 
 resource "aws_instance" "db_ec2_instnace" {
+  #checkov:skip=CKV_AWS_8: The EBS is encrypted already but the warning still shows
   #checkov:skip=CKV_AWS_79: Skip requiring IMDSv2 for demo code 
   #checkov:skip=CKV_AWS_126: Skip detailed monitoring for demo instance
   #checkov:skip=CKV_AWS_135: EBS Optimized is always on for Nitro EC2 instance types  

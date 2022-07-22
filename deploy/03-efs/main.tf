@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_efs_file_system" "wordpress" {
   encrypted = true
-     #checkov:skip=CKV_AWS_194: For demo code, we don't use customer managed keys to encrypt EFS data
+     #checkov:skip=CKV_AWS_184: For demo code, we don't use customer managed keys to encrypt EFS data
 }
 
 locals {
